@@ -12,6 +12,14 @@
 
 (add-to-list 'load-path "~/emacs.d/epg-0.0.16")
 
+;; disable the bell on most (but not all) commands
+
+(setq ring-bell-function
+      (lambda ()
+	(unless (memq this-command
+		      '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
+	  (ding))))
+
 ;; byte compiler causes issues with ecb
 ;; so we don't use it by default anymore
 
@@ -27,7 +35,11 @@
 ;; additional autoloads
 
 (autoload 'egg-status "egg" nil t)
+(autoload 'markdown-mode "markdown-mode.el"
+  "Major mode for editing Markdown files" t)
+
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
 
 ;; various requires
 
@@ -37,6 +49,9 @@
 (require 'redo)
 (require 'ruby-electric)
 (require 'cucumber-mode)
+(require 'dired+)
+(require 'rdebug)
+(require 'jira)
 
 ;; load my personal utility crap
 (load-library "gf.el")
@@ -65,11 +80,12 @@
             ))
 
 ;;; MacOS X specific stuff
+
 (setq mac-option-modifier 'meta)
 (setq mac-command-modifier 'hyper)
 
-;; mac-key-mode is ok, but I prefer to map copy/kill/yank defuns to crisp methods
-;; manually
+;; mac-key-mode is ok, but I prefer to map copy/kill/yank defuns to crisp
+;; methods manually
 
 ;;(require 'mac-key-mode)
 
@@ -87,7 +103,7 @@
 (global-set-key [(hyper w)]
                 (lambda () (interactive) (kill-buffer (current-buffer))))
 (global-set-key [(hyper .)] 'keyboard-quit)
-
+(global-set-key [(hyper \])] 'indent-region)
 
 ;; our own local keybindings
 
@@ -104,7 +120,7 @@
 (define-key crisp-mode-map [(f14)]           'delete-window)
 (define-key crisp-mode-map [(control f4)]   'delete-other-windows)
 
-(global-set-key [(control cg)] 'egg-status)
+(global-set-key [(control c) (g)] 'egg-status)
 (global-set-key [(hyper z)] 'undo)
 (global-set-key [(hyper shift z)] 'redo)
 (global-set-key "\C-cl" 'org-store-link)
@@ -152,11 +168,10 @@
 (setq-default indent-tabs-mode 'nil)
 
 (setq ruby-deep-indent-paren 'nil)
-
+(delete-selection-mode)
 (setq default-major-mode 'text-mode)
 
 ;; dired mode tweaks
-(require 'dired+)
 (put 'dired-find-alternate-file 'disabled nil)
 (define-key ctl-x-map   "d" 'diredp-dired-files)
 (define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
@@ -221,7 +236,7 @@
  '(ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
  '(ecb-source-path (quote ("~/projects")))
  '(ecb-tip-of-the-day nil)
- '(ecb-tree-buffer-style (quote image))
+ '(ecb-tree-buffer-style (quote ascii-guides))
  '(egg-enable-tooltip t)
  '(egg-mode-key-prefix "C-c v")
  '(egg-refresh-index-in-backround t)
@@ -230,8 +245,10 @@
  '(flymake-start-syntax-check-on-find-file t)
  '(flymake-start-syntax-check-on-newline nil)
  '(inhibit-startup-screen t)
+ '(jira-url "https://jira.serv.io/rpc/xmlrpc")
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
+ '(rdebug-restore-original-window-configuration t)
  '(ruby-indent-level 4)
  '(tool-bar-mode nil)
  '(tramp-default-method "scpx")
