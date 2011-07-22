@@ -123,8 +123,10 @@
 (global-set-key [(control c) (g)] 'egg-status)
 (global-set-key [(hyper z)] 'undo)
 (global-set-key [(hyper shift z)] 'redo)
-(global-set-key "\C-cl" 'org-store-link)
-(global-set-key "\C-ca" 'org-agenda)
+
+(global-set-key "\C-cl" 'ruby-lint)
+;;(global-set-key "\C-cl" 'org-store-link)
+;;(global-set-key "\C-ca" 'org-agenda)
 
 ;; love these two defuns so let's make C-e and C-a inherit them too
 
@@ -248,6 +250,7 @@
  '(jira-url "https://jira.serv.io/rpc/xmlrpc")
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
+ '(org-startup-folded nil)
  '(rdebug-restore-original-window-configuration t)
  '(ruby-indent-level 4)
  '(tool-bar-mode nil)
