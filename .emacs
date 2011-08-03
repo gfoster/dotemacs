@@ -32,6 +32,13 @@
 
 (put 'narrow-to-region 'disabled nil)
 
+;; turn off scrollbars because they are fugly
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; nxhtml shit
+
+(load "nxhtml/autostart.el")
+
 ;; additional autoloads
 
 (autoload 'egg-status "egg" nil t)
@@ -269,5 +276,10 @@
  '(font-lock-keyword-face ((t (:foreground "darkorange"))))
  '(font-lock-string-face ((t (:foreground "seagreen"))))
  '(font-lock-variable-name-face ((t (:foreground "cornflowerblue"))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode1 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode2 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode3 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
  '(region ((t (:background "cornflowerblue" :foreground "black"))))
  '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
