@@ -20,6 +20,15 @@
 		      '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
 	  (ding))))
 
+;; override the vc-git-annotate-command to not pass rev (which is fucking broken)
+
+(require 'vc-git)
+(defun vc-git-annotate-command (file buf &optional rev)
+  (let ((name (file-relative-name file)))
+    (vc-git-command buf 0 name "blame" )))
+
+;;(require 'git-blame)
+
 ;; byte compiler causes issues with ecb
 ;; so we don't use it by default anymore
 
@@ -32,12 +41,14 @@
 
 (put 'narrow-to-region 'disabled nil)
 
+(add-to-list 'load-path "~/.emacs.d/mo-git-blame")
+
 ;; turn off scrollbars because they are fugly
 (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
 ;; nxhtml shit
 
-(load "nxhtml/autostart.el")
+;;(load "nxhtml/autostart.el")
 
 ;; additional autoloads
 
@@ -127,7 +138,7 @@
 (define-key crisp-mode-map [(f14)]           'delete-window)
 (define-key crisp-mode-map [(control f4)]   'delete-other-windows)
 
-(global-set-key [(control c) (g)] 'egg-status)
+;;(global-set-key [(control c) (g)] 'egg-status)
 (global-set-key [(hyper z)] 'undo)
 (global-set-key [(hyper shift z)] 'redo)
 
@@ -264,7 +275,7 @@
  '(tramp-default-method "scpx")
  '(tramp-encoding-shell "/bin/bash")
  '(tramp-verbose 4)
- '(vc-handled-backends (quote (RCS CVS SVN SCCS Bzr Hg Arch MCVS)))
+ '(vc-handled-backends (quote (Git RCS CVS SVN SCCS Bzr Hg Arch MCVS)))
  '(yaml-indent-offset 4))
 
 (custom-set-faces
@@ -272,6 +283,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(default ((t (:stipple nil :background "black" :foreground "grey75" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-monaco"))))
  '(font-lock-comment-face ((t (:foreground "goldenrod"))))
  '(font-lock-keyword-face ((t (:foreground "darkorange"))))
  '(font-lock-string-face ((t (:foreground "seagreen"))))

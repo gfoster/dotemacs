@@ -40,7 +40,7 @@
   (gf-move-line (if (null n) 1 n)))
 
 (defun ruby-lint ()
-  "Performs a Ruby lint-check on the current file."
+  "Performs a very basic Ruby lint-check on the current file."
   (interactive)
   (save-buffer)
   (shell-command (concat "ruby -c " (buffer-file-name))))
