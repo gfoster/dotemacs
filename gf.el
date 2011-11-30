@@ -1,5 +1,5 @@
 ;; handy defuns and various crap
-;; last updated Mon May 23, 2011 16:59
+;; last updated Wed Nov 30, 2011 10:29
 
 (defun gf-insert-timestamp ()
   "Insert the current time"
@@ -53,3 +53,11 @@
       (when (and (buffer-file-name) (not (buffer-modified-p)))
         (revert-buffer t t t) )))
   (message "Refreshed open files.") )
+
+(defun untabify-buffer ()
+  (interactive)
+  (untabify (point-min) (point-max)))
+
+(defun tabify-buffer ()
+  (interactive)
+  (tabify (point-min) (point-max)))

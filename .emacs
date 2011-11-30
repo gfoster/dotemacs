@@ -58,6 +58,7 @@
 
 (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
 (add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
 
 ;; various requires
 
@@ -120,8 +121,12 @@
 (global-set-key [(hyper g)] 'isearch-repeat-forward)
 (global-set-key [(hyper w)]
                 (lambda () (interactive) (kill-buffer (current-buffer))))
+
 (global-set-key [(hyper .)] 'keyboard-quit)
 (global-set-key [(hyper \])] 'indent-region)
+
+(global-set-key [(hyper meta left)] 'previous-buffer)
+(global-set-key [(hyper meta right)] 'next-buffer)
 
 ;; our own local keybindings
 
@@ -136,7 +141,7 @@
 (define-key crisp-mode-map [(f13) (right)]   'split-window-horizontally)
 
 (define-key crisp-mode-map [(f14)]           'delete-window)
-(define-key crisp-mode-map [(control f4)]   'delete-other-windows)
+(define-key crisp-mode-map [(control f4)]    'delete-other-windows)
 
 ;;(global-set-key [(control c) (g)] 'egg-status)
 (global-set-key [(hyper z)] 'undo)
@@ -251,6 +256,7 @@
  '(current-language-environment "UTF-8")
  '(default-input-method "latin-1-prefix")
  '(ecb-clear-cachees-before-activate (quote t))
+ '(ecb-directories-update-speedbar t)
  '(ecb-layout-name "left3")
  '(ecb-options-version "2.40")
  '(ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
