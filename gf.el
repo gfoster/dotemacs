@@ -19,7 +19,7 @@
      (newline-and-indent)
      (insert "debugger; 1\n"))
     (otherwise
-     (message "no breakpoint appropriate for %s" major-mode))
+     (gf-growl-chat "Emacs Notification" (format "no breakpoint appropriate for %s" major-mode)))
     ))
 
 (defun gf-growl-chat (title message &optional sticky)
@@ -30,7 +30,7 @@
 ;; Sticky notifications
 (defun gf-growl-chat-sticky (title message)
   (interactive "sTitle: \nsGrowl: ")
-  (growl-chat title message t))
+  (gf-growl-chat title message t))
 
 ;; this is how you call it
 (defun gf-growl-test ()
