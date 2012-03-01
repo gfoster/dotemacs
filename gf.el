@@ -6,6 +6,18 @@
   (interactive "*")
   (insert (current-time-string)))
 
+(defun gf-insert-breakpoint ()
+  "insert a language appropriate breakpoint"
+  (interactive "*")
+  (cond
+   ((eq major-mode 'python-mode)
+    (newline-and-indent)
+    (insert "import pdb; pdb.set_trace()\n"))
+   ((eq major-mode 'ruby-mode)
+    (newline-and-indent)
+    (insert "debugger; 1\n"))
+   ))
+
 (defun gf-insert-datestamp ()
   "Insert date at point."
   (interactive)
@@ -61,3 +73,16 @@
 (defun tabify-buffer ()
   (interactive)
   (tabify (point-min) (point-max)))
+
+(defun writeroom ()
+  "Switches to a WriteRoom-like fullscreen style"
+  (interactive)
+  (when (featurep 'aquamacs)
+    ;; switch to white on black
+    ;;(color-theme-initialize)
+   ;; (color-theme-clarity)
+    ;; switch to Garamond 36pt
+    (aquamacs-autoface-mode 0)
+    ;;(set-frame-font "-apple-garamond-medium-r-normal--36-360-72-72-m-360-iso10646-1")
+    ;; switch to fullscreen mode
+    (aquamacs-toggle-full-frame)))
