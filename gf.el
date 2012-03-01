@@ -1,6 +1,8 @@
 ;; handy defuns and various crap
 ;; last updated Wed Nov 30, 2011 10:29
 
+(require 'cl)
+
 (defun gf-insert-timestamp ()
   "Insert the current time"
   (interactive "*")
@@ -9,14 +11,14 @@
 (defun gf-insert-breakpoint ()
   "insert a language appropriate breakpoint"
   (interactive "*")
-  (cond
-   ((eq major-mode 'python-mode)
-    (newline-and-indent)
-    (insert "import pdb; pdb.set_trace()\n"))
-   ((eq major-mode 'ruby-mode)
-    (newline-and-indent)
-    (insert "debugger; 1\n"))
-   ))
+  (case major-mode
+    ('python-mode
+     (newline-and-indent)
+     (insert "import pdb; pdb.set_trace()\n"))
+    ('ruby-mode
+     (newline-and-indent)
+     (insert "debugger; 1\n"))
+    ))
 
 (defun gf-insert-datestamp ()
   "Insert date at point."

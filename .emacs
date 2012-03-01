@@ -148,7 +148,7 @@
   (global-set-key [(control c) (l)]         'ruby-lint)
   (global-set-key [(control c) (control d)] 'gf-insert-datestamp)
   (global-set-key [(control c) (control t)] 'gf-insert-timestamp)
-  (global-set-key [(control c) (d)]         'gf-insert-breakpoint)
+  (global-set-key [(control c) (control b)] 'gf-insert-breakpoint)
   (global-set-key [(control c) (a)]         'align-regexp)
   (global-set-key [(control c) (s)]         'svn-status)
 
