@@ -18,7 +18,24 @@
     ('ruby-mode
      (newline-and-indent)
      (insert "debugger; 1\n"))
+    (otherwise
+     (message "no breakpoint appropriate for %s" major-mode))
     ))
+
+(defun gf-growl-chat (title message &optional sticky)
+  (interactive "sTitle: \nsGrowl: ")
+  (shell-command
+   (format "growlnotify %s -m '%s' --appIcon 'Emacs' %s" title message (if sticky "--sticky" ""))))
+
+;; Sticky notifications
+(defun gf-growl-chat-sticky (title message)
+  (interactive "sTitle: \nsGrowl: ")
+  (growl-chat title message t))
+
+;; this is how you call it
+(defun gf-growl-test ()
+  (interactive "*")
+  (gf-growl-chat "GF-growl-test" (format "Your major mode is %s" major-mode)))
 
 (defun gf-insert-datestamp ()
   "Insert date at point."
