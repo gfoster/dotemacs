@@ -10,7 +10,7 @@
         user-mail-address "gary.foster@gmail.com"
         mail-host-address '"gmail.com")
 
-  (setq load-path (append '("~/emacs.d" "~/emacs.d/lib" "~/emacs.d/cedet-1.0/common"
+  (setq load-path (append '("~/emacs.d" "~/emacs.d/color-theme" "~/emacs.d/lib" "~/emacs.d/cedet-1.0/common"
                             "~/emacs.d/ecb-2.40") load-path))
 
   (add-to-list 'load-path "~/emacs.d/epg-0.0.16")
@@ -53,15 +53,78 @@
 
   ;;(load "nxhtml/autostart.el")
 
+  ;; pymacs stuff
+
+  (autoload 'pymacs-apply "pymacs")
+  (autoload 'pymacs-call "pymacs")
+  (autoload 'pymacs-eval "pymacs" nil t)
+  (autoload 'pymacs-exec "pymacs" nil t)
+  (autoload 'pymacs-load "pymacs" nil t)
+  (autoload 'pymacs-autoload "pymacs")
+  ;;(eval-after-load "pymacs"
+  ;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
+
+  (pymacs-load "ropemacs" "rope-")
+
   ;; additional autoloads
 
   (autoload 'egg-status "egg" nil t)
   (autoload 'markdown-mode "markdown-mode.el"
     "Major mode for editing Markdown files" t)
 
+  (autoload 'autopair-global-mode "autopair" nil t)
+  (autopair-global-mode)
+
+  (add-hook 'python-mode-hook
+            #'(lambda ()
+                (push '(?' . ?')
+                      (getf autopair-extra-pairs :code))
+                (setq autopair-handle-action-fns
+                      (list #'autopair-default-handle-action
+                            #'autopair-python-triple-quote-action))))
+
   (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
   (add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
   (add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
+
+  ;; override the braindead python.el with python-mode.el
+
+  (require 'python-mode)
+
+  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
+  (add-to-list 'interpreter-mode-alist '("python" . python-mode))
+
+  ;; setup pylookup
+
+  (autoload 'pylookup-lookup "pylookup")
+  (autoload 'pylookup-update "pylookup")
+  (setq pylookup-program "~/bin/pylookup.py")
+  (setq pylookup-db-file "~/bin/pylookup.db")
+  (global-set-key "\C-ch" 'pylookup-lookup)
+
+  ;; setup anything.el
+
+  (require 'ipython)
+  ;; (require 'anything)
+  ;; (require 'anything-ipython)
+
+  ;; (require 'anything-ipython)
+  ;; (add-hook 'python-mode-hook #'(lambda ()
+  ;;                                 (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
+  ;; (add-hook 'ipython-shell-hook #'(lambda ()
+  ;;                                   (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
+
+
+  ;; (when (require 'anything-show-completion nil t)
+  ;;   (use-anything-show-completion 'anything-ipython-complete
+  ;;                                 '(length initial-pattern)))
+
+  ;; override comint
+  (require 'comint)
+  (define-key comint-mode-map (kbd "M-") 'comint-next-input)
+  (define-key comint-mode-map (kbd "M-") 'comint-previous-input)
+  (define-key comint-mode-map [down] 'comint-next-matching-input-from-input)
+  (define-key comint-mode-map [up] 'comint-previous-matching-input-from-input)
 
   ;; various requires
 
@@ -74,6 +137,11 @@
   (require 'dired+)
   (require 'rdebug)
   (require 'jira)
+  (require 'ido)
+  (require 'pretty-mode) ;; for shits
+  (global-pretty-mode 1)
+
+  (ido-mode)
 
   ;; load my personal utility crap
   (load-library "gf.el")
@@ -199,7 +267,7 @@
   (setq-default indent-tabs-mode 'nil)
 
   (setq ruby-deep-indent-paren 'nil)
-  (delete-selection-mode)
+  (delete-selection-mode 1)
   (setq default-major-mode 'text-mode)
 
   ;; dired mode tweaks
@@ -307,3 +375,62 @@
    '(region ((t (:background "cornflowerblue" :foreground "black"))))
    '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
 )
+(custom-set-variables
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(case-fold-search t)
+ '(compilation-scroll-output t)
+ '(crisp-mode t nil (crisp))
+ '(crisp-override-meta-x nil)
+ '(current-language-environment "UTF-8")
+ '(default-input-method "latin-1-prefix")
+ '(ecb-clear-cachees-before-activate (quote t))
+ '(ecb-directories-update-speedbar t)
+ '(ecb-layout-name "left3")
+ '(ecb-options-version "2.40")
+ '(ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
+ '(ecb-source-path (quote ("~/projects")))
+ '(ecb-tip-of-the-day nil)
+ '(ecb-tree-buffer-style (quote ascii-guides))
+ '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
+ '(egg-enable-tooltip t)
+ '(egg-mode-key-prefix "C-c v")
+ '(egg-refresh-index-in-backround t)
+ '(flymake-gui-warnings-enabled nil)
+ '(flymake-mode nil t)
+ '(flymake-start-syntax-check-on-find-file t)
+ '(flymake-start-syntax-check-on-newline nil)
+ '(inhibit-startup-screen t)
+ '(jira-url "https://jira.serv.io/rpc/xmlrpc")
+ '(mouse-wheel-progressive-speed nil)
+ '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
+ '(org-startup-folded nil)
+ '(python-honour-comment-indentation t)
+ '(rdebug-restore-original-window-configuration t)
+ '(ruby-indent-level 4)
+ '(tab-width 4)
+ '(tool-bar-mode nil)
+ '(tramp-default-method "scpx")
+ '(tramp-encoding-shell "/bin/bash")
+ '(tramp-verbose 4)
+ '(vc-handled-backends (quote (Git RCS SVN Bzr Hg Arch)))
+ '(yaml-indent-offset 4))
+(custom-set-faces
+  ;; custom-set-faces was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+ '(default ((t (:stipple nil :background "black" :foreground "grey75" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-menlo"))))
+ '(font-lock-comment-face ((t (:foreground "goldenrod"))))
+ '(font-lock-keyword-face ((t (:foreground "darkorange"))))
+ '(font-lock-string-face ((t (:foreground "seagreen"))))
+ '(font-lock-variable-name-face ((t (:foreground "cornflowerblue"))))
+ '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode1 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode2 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode3 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
+ '(region ((t (:background "cornflowerblue" :foreground "black"))))
+ '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
