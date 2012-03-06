@@ -4,377 +4,286 @@
 ;;; M-x list-faces-display   - show all defined faces and what they look like
 ;;; M-x color-themes-select  - show (and select from) all known themes in a buffer
 
-(unless (featurep 'aquamacs)
-  ;; Identify ourselves
-  (setq user-full-name    "Gary Foster"
-        user-mail-address "gary.foster@gmail.com"
-        mail-host-address '"gmail.com")
+;; Identify ourselves
+(setq user-full-name    "Gary Foster"
+      user-mail-address "gary.foster@gmail.com"
+      mail-host-address '"gmail.com")
 
-  (setq load-path (append '("~/emacs.d" "~/emacs.d/color-theme" "~/emacs.d/lib" "~/emacs.d/cedet-1.0/common"
-                            "~/emacs.d/ecb-2.40") load-path))
+(setq load-path (append '("~/emacs.d" "~/emacs.d/color-theme" "~/emacs.d/lib" "~/emacs.d/cedet-1.0/common"
+                          "~/emacs.d/ecb-2.40") load-path))
 
-  (add-to-list 'load-path "~/emacs.d/epg-0.0.16")
+(add-to-list 'load-path "~/emacs.d/epg-0.0.16")
+(add-to-list 'load-path "~/emacs.d/yasnippet")
 
-  ;; disable the bell on most (but not all) commands
+;; disable the bell on most (but not all) commands
 
-  (setq ring-bell-function
-        (lambda ()
-          (unless (memq this-command
-                        '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
-            (ding))))
+(setq ring-bell-function
+      (lambda ()
+        (unless (memq this-command
+                      '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
+          (ding))))
 
-  ;; override the vc-git-annotate-command to not pass rev (which is fucking broken)
+;; override the vc-git-annotate-command to not pass rev (which is fucking broken)
 
-  (require 'vc-git)
-  (defun vc-git-annotate-command (file buf &optional rev)
-    (let ((name (file-relative-name file)))
-      (vc-git-command buf 0 name "blame" )))
+(require 'vc-git)
+(defun vc-git-(and )nnotate-command (file buf &optional rev)
+  (let ((name (file-relative-name file)))
+    (vc-git-command buf 0 name "blame" )))
 
-  ;;(require 'git-blame)
+;;(require 'git-blame)
 
-  ;; byte compiler causes issues with ecb
-  ;; so we don't use it by default anymore
+;; byte compiler causes issues with ecb
+;; so we don't use it by default anymore
 
-  ;;(require 'bytecomp)
-  ;;(setq byte-compile-verbose nil)
-  ;;(setq byte-compile-warnings nil)
-  ;;(require 'byte-code-cache)
-  ;;(setq bcc-blacklist '("\\.emacs\\.history" "\\.emacs\\.desktop"))
-  ;;(setq bcc-cache-directory "~/.emacs.d/elc")
+;;(require 'bytecomp)
+;;(setq byte-compile-verbose nil)
+;;(setq byte-compile-warnings nil)
+;;(require 'byte-code-cache)
+;;(setq bcc-blacklist '("\\.emacs\\.history" "\\.emacs\\.desktop"))
+;;(setq bcc-cache-directory "~/.emacs.d/elc")
 
-  (put 'narrow-to-region 'disabled nil)
+(put 'narrow-to-region 'disabled nil)
 
-  (add-to-list 'load-path "~/.emacs.d/mo-git-blame")
+(add-to-list 'load-path "~/.emacs.d/mo-git-blame")
 
-  ;; turn off scrollbars because they are fugly
-  (if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+;; turn off scrollbars because they are fugly
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-  ;; nxhtml shit
+;; nxhtml shit
 
-  ;;(load "nxhtml/autostart.el")
-
-  ;; pymacs stuff
-
-  (autoload 'pymacs-apply "pymacs")
-  (autoload 'pymacs-call "pymacs")
-  (autoload 'pymacs-eval "pymacs" nil t)
-  (autoload 'pymacs-exec "pymacs" nil t)
-  (autoload 'pymacs-load "pymacs" nil t)
-  (autoload 'pymacs-autoload "pymacs")
-  ;;(eval-after-load "pymacs"
-  ;;  '(add-to-list 'pymacs-load-path YOUR-PYMACS-DIRECTORY"))
-
-  (pymacs-load "ropemacs" "rope-")
-
-  ;; additional autoloads
-
-  (autoload 'egg-status "egg" nil t)
-  (autoload 'markdown-mode "markdown-mode.el"
-    "Major mode for editing Markdown files" t)
-
-  (autoload 'autopair-global-mode "autopair" nil t)
-  (autopair-global-mode)
-
-  (add-hook 'python-mode-hook
-            #'(lambda ()
-                (push '(?' . ?')
-                      (getf autopair-extra-pairs :code))
-                (setq autopair-handle-action-fns
-                      (list #'autopair-default-handle-action
-                            #'autopair-python-triple-quote-action))))
-
-  (add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-  (add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
-  (add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
-
-  ;; override the braindead python.el with python-mode.el
-
-  (require 'python-mode)
-
-  (add-to-list 'auto-mode-alist '("\\.py\\'" . python-mode))
-  (add-to-list 'interpreter-mode-alist '("python" . python-mode))
-
-  ;; setup pylookup
-
-  (autoload 'pylookup-lookup "pylookup")
-  (autoload 'pylookup-update "pylookup")
-  (setq pylookup-program "~/bin/pylookup.py")
-  (setq pylookup-db-file "~/bin/pylookup.db")
-  (global-set-key "\C-ch" 'pylookup-lookup)
-
-  ;; setup anything.el
-
-  (require 'ipython)
-  ;; (require 'anything)
-  ;; (require 'anything-ipython)
-
-  ;; (require 'anything-ipython)
-  ;; (add-hook 'python-mode-hook #'(lambda ()
-  ;;                                 (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
-  ;; (add-hook 'ipython-shell-hook #'(lambda ()
-  ;;                                   (define-key py-mode-map (kbd "M-<tab>") 'anything-ipython-complete)))
+;;(load "nxhtml/autostart.el")
 
 
-  ;; (when (require 'anything-show-completion nil t)
-  ;;   (use-anything-show-completion 'anything-ipython-complete
-  ;;                                 '(length initial-pattern)))
+;; yassnippet
 
-  ;; override comint
-  (require 'comint)
-  (define-key comint-mode-map (kbd "M-") 'comint-next-input)
-  (define-key comint-mode-map (kbd "M-") 'comint-previous-input)
-  (define-key comint-mode-map [down] 'comint-next-matching-input-from-input)
-  (define-key comint-mode-map [up] 'comint-previous-matching-input-from-input)
+(require 'yasnippet)
+(yas/global-mode 1)
 
-  ;; various requires
+;; python stuff
 
-  (require 'crisp)
-  (require 'wiki-fu)
-  (require 'color-theme)
-  (require 'redo)
-  (require 'ruby-electric)
-  (require 'cucumber-mode)
-  (require 'dired+)
-  (require 'rdebug)
-  (require 'jira)
-  (require 'ido)
-  (require 'pretty-mode) ;; for shits
-  (global-pretty-mode 1)
+(require 'python-setup)
 
-  (ido-mode)
+;; autocompletion
 
-  ;; load my personal utility crap
-  (load-library "gf.el")
+(require 'auto-complete)
+(global-auto-complete-mode t)
 
-  (color-theme-initialize)
-  (color-theme-clarity)
+
+;; additional autoloads
+
+(autoload 'egg-status "egg" nil t)
+(autoload 'markdown-mode "markdown-mode.el"
+  "Major mode for editing Markdown files" t)
+
+;;(autoload 'autopair-global-mode "autopair" nil t)
+;;(autopair-global-mode)
+
+
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
+
+;; override comint
+(require 'comint)
+(define-key comint-mode-map (kbd "M-") 'comint-next-input)
+(define-key comint-mode-map (kbd "M-") 'comint-previous-input)
+(define-key comint-mode-map [down] 'comint-next-matching-input-from-input)
+(define-key comint-mode-map [up] 'comint-previous-matching-input-from-input)
+
+;; various requires
+
+(require 'crisp)
+(require 'wiki-fu)
+(require 'color-theme)
+(require 'redo)
+(require 'ruby-electric)
+(require 'cucumber-mode)
+(require 'dired+)
+(require 'rdebug)
+(require 'jira)
+(require 'ido)
+(require 'pretty-mode) ;; for shits
+
+;; FORCE crisp-mode globally
+(setq-default crisp-mode 't)
+(setq-default crisp-override-meta-x nil)
+(global-pretty-mode 1)
+
+(ido-mode)
+
+;; load my personal utility crap
+(require 'gf-snippets)
+
+(color-theme-initialize)
+(color-theme-clarity)
 
 ;;; random hooks
 
 ;; trailing whitespace sucks
 
-  (add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
-  (add-hook 'ruby-mode-hook
-            (lambda()
-              (add-hook 'local-write-file-hooks
-                        'untabify-buffer)
-              (set (make-local-variable 'indent-tabs-mode) 'nil)
-              (set (make-local-variable 'tab-width) 2)
-              (imenu-add-to-menubar "IMENU")
-              (define-key ruby-mode-map [(control return)] 'newline-and-indent)
-              (require 'ruby-electric)
-              (ruby-electric-mode t)
-              ))
+(add-hook 'ruby-mode-hook
+          (lambda()
+            (add-hook 'local-write-file-hooks
+                      'untabify-buffer)
+            (set (make-local-variable 'indent-tabs-mode) 'nil)
+            (set (make-local-variable 'tab-width) 2)
+            (imenu-add-to-menubar "IMENU")
+            (define-key ruby-mode-map [(control return)] 'newline-and-indent)
+            (require 'ruby-electric)
+            (ruby-electric-mode t)
+            ))
 
 ;;; MacOS X specific stuff
 
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'hyper)
+(setq mac-option-modifier 'meta)
+(setq mac-command-modifier 'hyper)
 
-  ;; mac-key-mode is ok, but I prefer to map copy/kill/yank defuns to crisp
-  ;; methods manually
+;; mac-key-mode is ok, but I prefer to map copy/kill/yank defuns to crisp
+;; methods manually
 
-  ;;(require 'mac-key-mode)
+;;(require 'mac-key-mode)
 
-  ;; keyboard remapping to match Mac OSX shortcuts
+;; keyboard remapping to match Mac OSX shortcuts
 
-  (global-set-key [(hyper a)] 'mark-whole-buffer)
-  (global-set-key [(hyper c)] 'crisp-set-clipboard)
-  (global-set-key [(hyper x)] 'crisp-kill-region)
-  (global-set-key [(hyper v)] 'crisp-yank-clipboard)
-  (global-set-key [(hyper s)] 'save-buffer)
-  (global-set-key [(hyper l)] 'goto-line)
-  (global-set-key [(hyper o)] 'find-file)
-  (global-set-key [(hyper f)] 'isearch-forward)
-  (global-set-key [(hyper g)] 'isearch-repeat-forward)
-  (global-set-key [(hyper w)]
-                  (lambda () (interactive) (kill-buffer (current-buffer))))
+(global-set-key [(hyper a)] 'mark-whole-buffer)
+(global-set-key [(hyper c)] 'crisp-set-clipboard)
+(global-set-key [(hyper x)] 'crisp-kill-region)
+(global-set-key [(hyper v)] 'crisp-yank-clipboard)
+(global-set-key [(hyper s)] 'save-buffer)
+(global-set-key [(hyper l)] 'goto-line)
+(global-set-key [(hyper o)] 'find-file)
+(global-set-key [(hyper f)] 'isearch-forward)
+(global-set-key [(hyper g)] 'isearch-repeat-forward)
+(global-set-key [(hyper w)]
+                (lambda () (interactive) (kill-buffer (current-buffer))))
 
-  (global-set-key [(hyper .)] 'keyboard-quit)
-  (global-set-key [(hyper \])] 'indent-region)
+(global-set-key [(hyper \])] 'indent-region)
 
-  (global-set-key [(hyper meta left)] 'previous-buffer)
-  (global-set-key [(hyper meta right)] 'next-buffer)
+(global-set-key [(hyper meta left)] 'previous-buffer)
+(global-set-key [(hyper meta right)] 'next-buffer)
 
-  ;; override or extend some of the default crisp-mode keybindings
+;; override or extend some of the default crisp-mode keybindings
 
-  ;; these are normally bound to f3 and f4 respectively, but for some reason
-  ;; f3 and f4 are being swallowed on this mac
+;; these are normally bound to f3 and f4 respectively, but for some reason
+;; f3 and f4 are being swallowed on this mac
 
-  (define-key crisp-mode-map [(f13) (down)]    'split-window-vertically)
-  (define-key crisp-mode-map [(f13) (right)]   'split-window-horizontally)
+(define-key crisp-mode-map [(f13) (down)]    'split-window-vertically)
+(define-key crisp-mode-map [(f13) (right)]   'split-window-horizontally)
 
-  (define-key crisp-mode-map [(f14)]           'delete-window)
-  (define-key crisp-mode-map [(control f4)]    'delete-other-windows)
+(define-key crisp-mode-map [(f14)]           'delete-window)
+(define-key crisp-mode-map [(control f4)]    'delete-other-windows)
 
-  ;; our own local keybindings
+;; our own local keybindings
 
-  (define-key trac-wiki-mode-map "\C-c\C-c" 'trac-wiki-preview-default)
-  (global-set-key [(control c) (\\)]        'comment-region)
-  (global-set-key [(control c) (shift \\)]  'uncomment-region)
-  (global-set-key [(control c) (l)]         'ruby-lint)
-  (global-set-key [(control c) (control d)] 'gf-insert-datestamp)
-  (global-set-key [(control c) (control t)] 'gf-insert-timestamp)
-  (global-set-key [(control c) (control b)] 'gf-insert-breakpoint)
-  (global-set-key [(control c) (a)]         'align-regexp)
-  (global-set-key [(control c) (s)]         'svn-status)
+(define-key trac-wiki-mode-map "\C-c\C-c" 'trac-wiki-preview-default)
+(global-set-key [(control c) (\\)]        'comment-region)
+(global-set-key [(control c) (shift \\)]  'uncomment-region)
+(global-set-key [(control c) (l)]         'ruby-lint)
+(global-set-key [(control c) (control d)] 'gf-insert-datestamp)
+(global-set-key [(control c) (control t)] 'gf-insert-timestamp)
+(global-set-key [(control c) (control b)] 'gf-insert-breakpoint)
+(global-set-key [(control c) (a)]         'align-regexp)
+(global-set-key [(control c) (s)]         'svn-status)
 
-  ;; love these two defuns so let's make C-e and C-a inherit them too
+;; love these two defuns so let's make C-e and C-a inherit them too
 
-  (global-set-key [(control e)] 'crisp-end)
-  (global-set-key [(control a)] 'crisp-home)
+(global-set-key [(control e)] 'crisp-end)
+(global-set-key [(control a)] 'crisp-home)
 
-  (global-set-key [(meta up)]   'gf-move-line-up)
-  (global-set-key [(meta down)] 'gf-move-line-down)
+(global-set-key [(meta up)]   'gf-move-line-up)
+(global-set-key [(meta down)] 'gf-move-line-down)
 
-  ;;(global-set-key [(control c) (g)] 'egg-status)
-  (global-set-key [(hyper z)] 'undo)
-  (global-set-key [(hyper shift z)] 'redo)
+;;(global-set-key [(control c) (g)] 'egg-status)
+(global-set-key [(hyper z)] 'undo)
+(global-set-key [(hyper shift z)] 'redo)
 
-  ;;(global-set-key "\C-cl" 'org-store-link)
-  ;;(global-set-key "\C-ca" 'org-agenda)
+;;(global-set-key "\C-cl" 'org-store-link)
+;;(global-set-key "\C-ca" 'org-agenda)
 
-  ;; pop up a man page on the command under (or at) point
+;; pop up a man page on the command under (or at) point
 
-  (global-set-key [(hyper f1)] 'man-follow)
+(global-set-key [(hyper f1)] 'man-follow)
 
-  ;; show this man page in a new frame instead of splitting the window
+;; show this man page in a new frame instead of splitting the window
 
-  (setq Man-notify-method 'newframe)
+(setq Man-notify-method 'newframe)
 
-  ;; disable C-z iconification which drives me batshit
-  (when window-system
-    (global-unset-key [(control z)]))   ; iconify-or-deiconify-frame
+;; disable C-z iconification which drives me batshit
+(when window-system
+  (global-unset-key [(control z)]))   ; iconify-or-deiconify-frame
 
-  ;; org mode settings
+(global-font-lock-mode 1)
 
-  (setq org-log-done t)
-  (global-font-lock-mode 1)
-  (setq org-agenda-files (file-expand-wildcards "~/Dropbox/org_stuff/*.org"))
+;; org mode settings
 
-  ;; set up the emacs server
-  (server-start)
+(setq org-log-done t)
+(setq org-agenda-files (file-expand-wildcards "~/Dropbox/org_stuff/*.org"))
 
-  ;; force our various modes
+;; set up the emacs server
+(server-start)
 
-  (column-number-mode 't)
-  (delete-selection-mode)
-  (show-paren-mode)
-  (delete-selection-mode)
+;; force our various modes
 
-  ;; hard tabs suck
-  (setq-default indent-tabs-mode 'nil)
+(column-number-mode 't)
+(delete-selection-mode 't)
 
-  (setq ruby-deep-indent-paren 'nil)
-  (delete-selection-mode 1)
-  (setq default-major-mode 'text-mode)
+(show-paren-mode 't)
 
-  ;; dired mode tweaks
-  (put 'dired-find-alternate-file 'disabled nil)
-  (define-key ctl-x-map   "d" 'diredp-dired-files)
-  (define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
+;; hard tabs suck
+(setq-default indent-tabs-mode 'nil)
 
-  ;; CEDET stuff
+(setq ruby-deep-indent-paren 'nil)
+(setq default-major-mode 'text-mode)
 
-  ;; This is required by ECB which will be loaded later.
-  ;; See cedet/common/cedet.info for configuration details.
-  (load-library "cedet")
+;; dired mode tweaks
+(put 'dired-find-alternate-file 'disabled nil)
+(define-key ctl-x-map   "d" 'diredp-dired-files)
+(define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
 
-  ;; Enable EDE (Project Management) features
-  (global-ede-mode 1)
+;; CEDET stuff
 
-  ;; * This enables the database and idle reparse engines
-  (semantic-load-enable-minimum-features)
+;; This is required by ECB which will be loaded later.
+;; See cedet/common/cedet.info for configuration details.
+(load-library "cedet")
 
-  ;; * This enables some tools useful for coding, such as summary mode
-  ;;   imenu support, and the semantic navigator
-  (semantic-load-enable-code-helpers)
+;; Enable EDE (Project Management) features
+(global-ede-mode 1)
 
-  ;; set up ecb
+;; * This enables the database and idle reparse engines
+(semantic-load-enable-minimum-features)
 
-  ;;(require 'ecb-autoloads)
-  (require 'ecb)
-  (setq ecb-ping-options '("-c" "1" "HOST"))
+;; * This enables some tools useful for coding, such as summary mode
+;;   imenu support, and the semantic navigator
+(semantic-load-enable-code-helpers)
 
-  ;; setup easy gpg
-  ;; any files that end in .gpg will trigger encryption mode automatically.
-  ;; you can avoid the prompts for keys by prefixing this:
-  ;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
-  ;;           ^^^ <- modified for the type of mode you want, of course
+;; set up ecb
 
-  (require 'epa-setup)
-  (epa-file-enable)
+;;(require 'ecb-autoloads)
+(require 'ecb)
+(setq ecb-ping-options '("-c" "1" "HOST"))
 
-  ;; disable querying the external GUI for the key and do it within emacs
-  (setenv "GPG_AGENT_INFO" nil)
+;; setup easy gpg
+;; any files that end in .gpg will trigger encryption mode automatically.
+;; you can avoid the prompts for keys by prefixing this:
+;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
+;;           ^^^ <- modified for the type of mode you want, of course
 
-  ;; auto-reindent lines after a yank (paste) operation
+(require 'epa-setup)
+(epa-file-enable)
 
-  (defadvice yank (after indent-region activate)
-    (let ((mark-even-if-inactive t))
-      (indent-region (region-beginning) (region-end) nil)))
+;; disable querying the external GUI for the key and do it within emacs
+(setenv "GPG_AGENT_INFO" nil)
 
-  ;; And finally Emacs custom settings.
+;; auto-reindent lines after a yank (paste) operation
 
-  (custom-set-variables
-   ;; custom-set-variables was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(case-fold-search t)
-   '(compilation-scroll-output t)
-   '(crisp-mode t nil (crisp))
-   '(crisp-override-meta-x nil)
-   '(current-language-environment "UTF-8")
-   '(default-input-method "latin-1-prefix")
-   '(ecb-clear-cachees-before-activate (quote t))
-   '(ecb-directories-update-speedbar t)
-   '(ecb-layout-name "left3")
-   '(ecb-options-version "2.40")
-   '(ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
-   '(ecb-source-path (quote ("~/projects")))
-   '(ecb-tip-of-the-day nil)
-   '(ecb-tree-buffer-style (quote ascii-guides))
-   '(egg-enable-tooltip t)
-   '(egg-mode-key-prefix "C-c v")
-   '(egg-refresh-index-in-backround t)
-   '(flymake-gui-warnings-enabled nil)
-   '(flymake-mode nil t)
-   '(flymake-start-syntax-check-on-find-file t)
-   '(flymake-start-syntax-check-on-newline nil)
-   '(inhibit-startup-screen t)
-   '(jira-url "https://jira.serv.io/rpc/xmlrpc")
-   '(mouse-wheel-progressive-speed nil)
-   '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
-   '(org-startup-folded nil)
-   '(rdebug-restore-original-window-configuration t)
-   '(ruby-indent-level 4)
-   '(tool-bar-mode nil)
-   '(tramp-default-method "scpx")
-   '(tramp-encoding-shell "/bin/bash")
-   '(tramp-verbose 4)
-   '(vc-handled-backends (quote (Git RCS CVS SVN SCCS Bzr Hg Arch MCVS)))
-   '(yaml-indent-offset 4))
+(defadvice yank (after indent-region activate)
+  (let ((mark-even-if-inactive t))
+    (indent-region (region-beginning) (region-end) nil)))
 
-  (custom-set-faces
-   ;; custom-set-faces was added by Custom.
-   ;; If you edit it by hand, you could mess it up, so be careful.
-   ;; Your init file should contain only one such instance.
-   ;; If there is more than one, they won't work right.
-   '(default ((t (:stipple nil :background "black" :foreground "grey75" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-menlo"))))
-   '(font-lock-comment-face ((t (:foreground "goldenrod"))))
-   '(font-lock-keyword-face ((t (:foreground "darkorange"))))
-   '(font-lock-string-face ((t (:foreground "seagreen"))))
-   '(font-lock-variable-name-face ((t (:foreground "cornflowerblue"))))
-   '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
-   '(mumamo-background-chunk-submode1 ((((class color) (min-colors 88) (background dark)) nil)))
-   '(mumamo-background-chunk-submode2 ((((class color) (min-colors 88) (background dark)) nil)))
-   '(mumamo-background-chunk-submode3 ((((class color) (min-colors 88) (background dark)) nil)))
-   '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
-   '(region ((t (:background "cornflowerblue" :foreground "black"))))
-   '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
-)
+;; And finally Emacs custom settings.
+
 (custom-set-variables
   ;; custom-set-variables was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -385,6 +294,8 @@
  '(crisp-mode t nil (crisp))
  '(crisp-override-meta-x nil)
  '(current-language-environment "UTF-8")
+ '(cursor-type (quote box))
+ '(custom-file nil)
  '(default-input-method "latin-1-prefix")
  '(ecb-clear-cachees-before-activate (quote t))
  '(ecb-directories-update-speedbar t)
@@ -403,9 +314,11 @@
  '(flymake-start-syntax-check-on-find-file t)
  '(flymake-start-syntax-check-on-newline nil)
  '(inhibit-startup-screen t)
- '(jira-url "https://jira.serv.io/rpc/xmlrpc")
+ '(inhibit-startup-message t)
+ '(jira-url "https://jira.talksum.com/rpc/xmlrpc")
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
+ '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-startup-folded nil)
  '(python-honour-comment-indentation t)
  '(rdebug-restore-original-window-configuration t)
@@ -416,7 +329,9 @@
  '(tramp-encoding-shell "/bin/bash")
  '(tramp-verbose 4)
  '(vc-handled-backends (quote (Git RCS SVN Bzr Hg Arch)))
- '(yaml-indent-offset 4))
+ '(yaml-indent-offset 4)
+ '(yas/snippet-dirs (quote ("/Users/gfoster/emacs.d/yasnippet/snippets")) nil (yasnippet)))
+
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
@@ -434,3 +349,5 @@
  '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
  '(region ((t (:background "cornflowerblue" :foreground "black"))))
  '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
+
+

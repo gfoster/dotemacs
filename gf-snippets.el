@@ -105,3 +105,5 @@
     ;;(set-frame-font "-apple-garamond-medium-r-normal--36-360-72-72-m-360-iso10646-1")
     ;; switch to fullscreen mode
     (aquamacs-toggle-full-frame)))
+
+(provide 'gf-snippets)
