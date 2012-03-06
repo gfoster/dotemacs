@@ -66,8 +66,6 @@
 ;; autocompletion
 
 (require 'auto-complete)
-(global-auto-complete-mode t)
-
 
 ;; additional autoloads
 
@@ -289,6 +287,7 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
+ '(ac-dwim t)
  '(case-fold-search t)
  '(compilation-scroll-output t)
  '(crisp-mode t nil (crisp))
@@ -313,8 +312,9 @@
  '(flymake-mode nil t)
  '(flymake-start-syntax-check-on-find-file t)
  '(flymake-start-syntax-check-on-newline nil)
+ '(global-auto-complete-mode t)
  '(inhibit-startup-screen t)
- '(inhibit-startup-message t)
+ '(initial-buffer-choice t)
  '(jira-url "https://jira.talksum.com/rpc/xmlrpc")
  '(mouse-wheel-progressive-speed nil)
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
@@ -324,6 +324,8 @@
  '(rdebug-restore-original-window-configuration t)
  '(ruby-indent-level 4)
  '(tab-width 4)
+ '(tags-revert-without-query t)
+ '(tags-table-list (quote ("/Users/gfoster/projects/talksum/CAMEL/TAGS")))
  '(tool-bar-mode nil)
  '(tramp-default-method "scpx")
  '(tramp-encoding-shell "/bin/bash")
