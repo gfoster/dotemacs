@@ -23,74 +23,14 @@
                       '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
           (ding))))
 
-;; override the vc-git-annotate-command to not pass rev (which is fucking broken)
-
-(require 'vc-git)
-(defun vc-git-(and )nnotate-command (file buf &optional rev)
-  (let ((name (file-relative-name file)))
-    (vc-git-command buf 0 name "blame" )))
-
-;;(require 'git-blame)
-
-;; byte compiler causes issues with ecb
-;; so we don't use it by default anymore
-
-;;(require 'bytecomp)
-;;(setq byte-compile-verbose nil)
-;;(setq byte-compile-warnings nil)
-;;(require 'byte-code-cache)
-;;(setq bcc-blacklist '("\\.emacs\\.history" "\\.emacs\\.desktop"))
-;;(setq bcc-cache-directory "~/.emacs.d/elc")
-
-(put 'narrow-to-region 'disabled nil)
-
-(add-to-list 'load-path "~/.emacs.d/mo-git-blame")
-
-;; turn off scrollbars because they are fugly
-(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
-
-;; nxhtml shit
-
-;;(load "nxhtml/autostart.el")
-
-
-;; yassnippet
-
-(require 'yasnippet)
-(yas/global-mode 1)
-
-;; python stuff
-
-(require 'python-setup)
-
-;; autocompletion
-
-(require 'auto-complete)
-(require 'pulse)
-(pulse-toggle-integration-advice t)
-;; additional autoloads
-
-(autoload 'egg-status "egg" nil t)
-(autoload 'markdown-mode "markdown-mode.el"
-  "Major mode for editing Markdown files" t)
-
-;;(autoload 'autopair-global-mode "autopair" nil t)
-;;(autopair-global-mode)
-
-
-(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
-(add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
-(add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
-
-;; override comint
-(require 'comint)
-(define-key comint-mode-map (kbd "M-") 'comint-next-input)
-(define-key comint-mode-map (kbd "M-") 'comint-previous-input)
-(define-key comint-mode-map [down] 'comint-next-matching-input-from-input)
-(define-key comint-mode-map [up] 'comint-previous-matching-input-from-input)
 
 ;; various requires
-
+(require 'vc-git)
+(require 'yasnippet)
+;;(require 'git-blame)
+(require 'auto-complete)
+(require 'pulse)
+(require 'comint)
 (require 'crisp)
 (require 'wiki-fu)
 (require 'color-theme)
@@ -102,25 +42,82 @@
 (require 'jira)
 (require 'ido)
 (require 'pretty-mode) ;; for shits
+(require 'cedet)
+;;(load-library "cedet")
 
-;; FORCE crisp-mode globally
-(setq-default crisp-mode 't)
-(setq-default crisp-override-meta-x nil)
-(global-pretty-mode 1)
+(require 'epa-setup)
+(epa-file-enable)
 
-(ido-mode)
+;; setup easy gpg
+;; any files that end in .gpg will trigger encryption mode automatically.
+;; you can avoid the prompts for keys by prefixing this:
+;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
+;;           ^^^ <- modified for the type of mode you want, of course
 
-;; load my personal utility crap
+(require 'ecb)
 (require 'gf-snippets)
+(require 'python-setup)
 
+;; additional autoloads
+
+(autoload 'egg-status "egg" nil t)
+(autoload 'markdown-mode "markdown-mode.el"
+  "Major mode for editing Markdown files" t)
+
+(add-to-list 'auto-mode-alist '("\\.org$" . org-mode))
+(add-to-list 'auto-mode-alist '("\\.mark" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.xhtml" . html-mode))
+
+;; make things pretty
 (color-theme-initialize)
 (color-theme-clarity)
 
+;; set up the emacs server
+(server-start)
+
+;; override the vc-git-annotate-command to not pass rev (which is fucking broken)
+(defun vc-git-annotate-command (file buf &optional rev)
+  (let ((name (file-relative-name file)))
+    (vc-git-command buf 0 name "blame" )))
+
+;; auto-reindent lines after a yank (paste) operation
+(defadvice yank (after indent-region activate)
+  (let ((mark-even-if-inactive t))
+    (indent-region (region-beginning) (region-end) nil)))
+
+;; enable our various modes
+(yas/global-mode 1)
+(global-pretty-mode 1)
+(ido-mode 1)
+(global-font-lock-mode 1)
+(column-number-mode 1)
+(delete-selection-mode 1)
+(show-paren-mode 1)
+(pulse-toggle-integration-advice 1) ;; pulse lines when we jump, etc
+(setq-default crisp-mode 1) ;; have to do this now to force it globally
+(setq-default crisp-override-meta-x nil)
+
+(put 'narrow-to-region 'disabled nil)
+
+;; turn off scrollbars because they are fugly
+(if (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
+
+;; org mode settings
+(setq org-log-done t)
+(setq org-agenda-files (file-expand-wildcards "~/Dropbox/org_stuff/*.org"))
+
+;; hard tabs suck
+(setq-default indent-tabs-mode 'nil)
+
+(setq ruby-deep-indent-paren 'nil)
+(setq default-major-mode 'text-mode)
+
+;; dired mode tweaks
+(put 'dired-find-alternate-file 'disabled nil)
+
 ;;; random hooks
 
-;; trailing whitespace sucks
-
-(add-hook 'before-save-hook 'delete-trailing-whitespace)
+(add-hook 'before-save-hook 'delete-trailing-whitespace) ;; trailing whitespace sucks
 
 (add-hook 'ruby-mode-hook
           (lambda()
@@ -134,33 +131,29 @@
             (ruby-electric-mode t)
             ))
 
-;;; MacOS X specific stuff
+;; key mapping overrides
 
-(setq mac-option-modifier 'meta)
-(setq mac-command-modifier 'hyper)
+;; these are normally already set via cua but I prefer to
+;; override the normal cut/copy/kill stuff with my crisp mappings
 
-;; mac-key-mode is ok, but I prefer to map copy/kill/yank defuns to crisp
-;; methods manually
-
-;;(require 'mac-key-mode)
-
-;; keyboard remapping to match Mac OSX shortcuts
-
-(global-set-key [(hyper a)] 'mark-whole-buffer)
 (global-set-key [(hyper c)] 'crisp-set-clipboard)
 (global-set-key [(hyper x)] 'crisp-kill-region)
 (global-set-key [(hyper v)] 'crisp-yank-clipboard)
-(global-set-key [(hyper s)] 'save-buffer)
-(global-set-key [(hyper l)] 'goto-line)
-(global-set-key [(hyper o)] 'find-file)
-(global-set-key [(hyper f)] 'isearch-forward)
-(global-set-key [(hyper g)] 'isearch-repeat-forward)
-(global-set-key [(hyper w)]
-                (lambda () (interactive) (kill-buffer (current-buffer))))
 
-(global-set-key [(hyper \])] 'indent-region)
+;; these used to map the mac keystrokes, but are done by
+;; default in aquamacs.  I'm leaving them in here just
+;; in case I need them in the future
 
-(global-set-key [(hyper meta left)] 'previous-buffer)
+;; (global-set-key [(hyper a)] 'mark-whole-buffer)
+;; (global-set-key [(hyper s)] 'save-buffer)
+;; (global-set-key [(hyper l)] 'goto-line)
+;; (global-set-key [(hyper o)] 'find-file)
+;; (global-set-key [(hyper f)] 'isearch-forward)
+;; (global-set-key [(hyper g)] 'isearch-repeat-forward)
+;; (global-set-key [(hyper w)]
+;;                 (lambda () (interactive) (kill-buffer (current-buffer))))
+
+(global-set-key [(hyper meta left)]  'previous-buffer)
 (global-set-key [(hyper meta right)] 'next-buffer)
 
 ;; override or extend some of the default crisp-mode keybindings
@@ -170,9 +163,8 @@
 
 (define-key crisp-mode-map [(f13) (down)]    'split-window-vertically)
 (define-key crisp-mode-map [(f13) (right)]   'split-window-horizontally)
-
 (define-key crisp-mode-map [(f14)]           'delete-window)
-(define-key crisp-mode-map [(control f4)]    'delete-other-windows)
+(define-key crisp-mode-map [(control f14)]    'delete-other-windows)
 
 ;; our own local keybindings
 
@@ -187,7 +179,6 @@
 (global-set-key [(control c) (s)]         'svn-status)
 
 ;; love these two defuns so let's make C-e and C-a inherit them too
-
 (global-set-key [(control e)] 'crisp-end)
 (global-set-key [(control a)] 'crisp-home)
 
@@ -198,54 +189,20 @@
 (global-set-key [(hyper z)] 'undo)
 (global-set-key [(hyper shift z)] 'redo)
 
-;;(global-set-key "\C-cl" 'org-store-link)
-;;(global-set-key "\C-ca" 'org-agenda)
+(define-key ctl-x-map   "d" 'diredp-dired-files)
+(define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
 
-;; pop up a man page on the command under (or at) point
-
-(global-set-key [(hyper f1)] 'man-follow)
-
-;; show this man page in a new frame instead of splitting the window
-
-(setq Man-notify-method 'newframe)
+;; override comint
+(define-key comint-mode-map (kbd "M-n") 'comint-next-input)
+(define-key comint-mode-map (kbd "M-p") 'comint-previous-input)
+(define-key comint-mode-map [down] 'comint-next-matching-input-from-input)
+(define-key comint-mode-map [up] 'comint-previous-matching-input-from-input)
 
 ;; disable C-z iconification which drives me batshit
 (when window-system
   (global-unset-key [(control z)]))   ; iconify-or-deiconify-frame
 
-(global-font-lock-mode 1)
-
-;; org mode settings
-
-(setq org-log-done t)
-(setq org-agenda-files (file-expand-wildcards "~/Dropbox/org_stuff/*.org"))
-
-;; set up the emacs server
-(server-start)
-
-;; force our various modes
-
-(column-number-mode 't)
-(delete-selection-mode 't)
-
-(show-paren-mode 't)
-
-;; hard tabs suck
-(setq-default indent-tabs-mode 'nil)
-
-(setq ruby-deep-indent-paren 'nil)
-(setq default-major-mode 'text-mode)
-
-;; dired mode tweaks
-(put 'dired-find-alternate-file 'disabled nil)
-(define-key ctl-x-map   "d" 'diredp-dired-files)
-(define-key ctl-x-4-map "d" 'diredp-dired-files-other-window)
-
 ;; CEDET stuff
-
-;; This is required by ECB which will be loaded later.
-;; See cedet/common/cedet.info for configuration details.
-(load-library "cedet")
 
 ;; Enable EDE (Project Management) features
 (global-ede-mode 1)
@@ -259,27 +216,10 @@
 
 ;; set up ecb
 
-;;(require 'ecb-autoloads)
-(require 'ecb)
 (setq ecb-ping-options '("-c" "1" "HOST"))
-
-;; setup easy gpg
-;; any files that end in .gpg will trigger encryption mode automatically.
-;; you can avoid the prompts for keys by prefixing this:
-;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
-;;           ^^^ <- modified for the type of mode you want, of course
-
-(require 'epa-setup)
-(epa-file-enable)
 
 ;; disable querying the external GUI for the key and do it within emacs
 (setenv "GPG_AGENT_INFO" nil)
-
-;; auto-reindent lines after a yank (paste) operation
-
-(defadvice yank (after indent-region activate)
-  (let ((mark-even-if-inactive t))
-    (indent-region (region-beginning) (region-end) nil)))
 
 ;; And finally Emacs custom settings.
 
