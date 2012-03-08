@@ -9,11 +9,16 @@
       user-mail-address "gary.foster@gmail.com"
       mail-host-address '"gmail.com")
 
-(setq load-path (append '("~/emacs.d" "~/emacs.d/color-theme" "~/emacs.d/lib" "~/emacs.d/cedet-1.0/common"
-                          "~/emacs.d/ecb-2.40") load-path))
+(global-font-lock-mode 1)
 
+(add-to-list 'load-path "~/emacs.d")
+(add-to-list 'load-path "~/emacs.d/lib")
+(add-to-list 'load-path "~/emacs.d/lib/color-theme")
+(add-to-list 'load-path "~/emacs.d/cedet-1.0/common")
+(add-to-list 'load-path "~/emacs.d/ecb-2.40")
+(add-to-list 'load-path "~/emacs.d/lib/rdebug-mode")
 (add-to-list 'load-path "~/emacs.d/epg-0.0.16")
-(add-to-list 'load-path "~/emacs.d/yasnippet")
+(add-to-list 'load-path "~/emacs.d/lib/yasnippet")
 
 ;; disable the bell on most (but not all) commands
 
@@ -22,7 +27,6 @@
         (unless (memq this-command
                       '(mwheel-scroll isearch-abort abort-recursive-edit exit-minibuffer keyboard-quit))
           (ding))))
-
 
 ;; various requires
 (require 'vc-git)
@@ -35,7 +39,6 @@
 (require 'wiki-fu)
 (require 'color-theme)
 (require 'redo)
-(require 'ruby-electric)
 (require 'cucumber-mode)
 (require 'dired+)
 (require 'rdebug)
@@ -44,7 +47,7 @@
 (require 'pretty-mode) ;; for shits
 (require 'cedet)
 ;;(load-library "cedet")
-
+(require 'ecb)
 (require 'epa-setup)
 (epa-file-enable)
 
@@ -54,9 +57,9 @@
 ;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
 ;;           ^^^ <- modified for the type of mode you want, of course
 
-(require 'ecb)
 (require 'gf-snippets)
-(require 'python-setup)
+(require 'setup-python)
+(require 'setup-ruby)
 
 ;; additional autoloads
 
@@ -89,7 +92,6 @@
 (yas/global-mode 1)
 (global-pretty-mode 1)
 (ido-mode 1)
-(global-font-lock-mode 1)
 (column-number-mode 1)
 (delete-selection-mode 1)
 (show-paren-mode 1)
@@ -109,7 +111,6 @@
 ;; hard tabs suck
 (setq-default indent-tabs-mode 'nil)
 
-(setq ruby-deep-indent-paren 'nil)
 (setq default-major-mode 'text-mode)
 
 ;; dired mode tweaks
@@ -118,18 +119,6 @@
 ;;; random hooks
 
 (add-hook 'before-save-hook 'delete-trailing-whitespace) ;; trailing whitespace sucks
-
-(add-hook 'ruby-mode-hook
-          (lambda()
-            (add-hook 'local-write-file-hooks
-                      'untabify-buffer)
-            (set (make-local-variable 'indent-tabs-mode) 'nil)
-            (set (make-local-variable 'tab-width) 2)
-            (imenu-add-to-menubar "IMENU")
-            (define-key ruby-mode-map [(control return)] 'newline-and-indent)
-            (require 'ruby-electric)
-            (ruby-electric-mode t)
-            ))
 
 ;; key mapping overrides
 
@@ -261,6 +250,7 @@
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
  '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-startup-folded nil)
+ '(pulse-iterations 20)
  '(python-honour-comment-indentation t)
  '(rdebug-restore-original-window-configuration t)
  '(ruby-indent-level 4)
@@ -273,14 +263,14 @@
  '(tramp-verbose 4)
  '(vc-handled-backends (quote (Git RCS SVN Bzr Hg Arch)))
  '(yaml-indent-offset 4)
- '(yas/snippet-dirs (quote ("/Users/gfoster/emacs.d/yasnippet/snippets")) nil (yasnippet)))
+ '(yas/snippet-dirs (quote ("/Users/gfoster/emacs.d/lib/yasnippet/snippets")) nil (yasnippet)))
 
 (custom-set-faces
   ;; custom-set-faces was added by Custom.
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:stipple nil :background "black" :foreground "grey75" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-menlo"))))
+ '(default ((t (:stipple nil :background "black" :foreground "grey85" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-menlo"))))
  '(font-lock-comment-face ((t (:foreground "goldenrod"))))
  '(font-lock-keyword-face ((t (:foreground "darkorange"))))
  '(font-lock-string-face ((t (:foreground "seagreen"))))
@@ -292,5 +282,4 @@
  '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
  '(region ((t (:background "cornflowerblue" :foreground "black"))))
  '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
-
 
