@@ -66,7 +66,8 @@
 ;; autocompletion
 
 (require 'auto-complete)
-
+(require 'pulse)
+(pulse-toggle-integration-advice t)
 ;; additional autoloads
 
 (autoload 'egg-status "egg" nil t)
