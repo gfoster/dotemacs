@@ -1,4 +1,4 @@
-;;; last update: Wed Feb 29, 2012 17:03
+;;; last update: Thu Mar  8, 2012 09:35
 
 ;;; M-x list-colors-display  - show what all the colors look like in a buffer
 ;;; M-x list-faces-display   - show all defined faces and what they look like
@@ -59,7 +59,7 @@
 
 (require 'gf-snippets)
 (require 'setup-python)
-(require 'setup-ruby)
+;;(require 'setup-ruby)
 
 ;; additional autoloads
 
@@ -73,7 +73,7 @@
 
 ;; make things pretty
 (color-theme-initialize)
-(color-theme-clarity)
+(color-theme-gary)
 
 ;; set up the emacs server
 (server-start)
@@ -166,6 +166,8 @@
 (global-set-key [(control c) (control b)] 'gf-insert-breakpoint)
 (global-set-key [(control c) (a)]         'align-regexp)
 (global-set-key [(control c) (s)]         'svn-status)
+(global-set-key  [(control tab)]          'yas/expand)
+
 
 ;; love these two defuns so let's make C-e and C-a inherit them too
 (global-set-key [(control e)] 'crisp-end)
@@ -243,6 +245,7 @@
  '(flymake-start-syntax-check-on-find-file t)
  '(flymake-start-syntax-check-on-newline nil)
  '(global-auto-complete-mode t)
+ '(ido-enable-regexp t)
  '(inhibit-startup-screen t)
  '(initial-buffer-choice t)
  '(jira-url "https://jira.talksum.com/rpc/xmlrpc")
@@ -270,16 +273,4 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
- '(default ((t (:stipple nil :background "black" :foreground "grey85" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 120 :width normal :family "apple-menlo"))))
- '(font-lock-comment-face ((t (:foreground "goldenrod"))))
- '(font-lock-keyword-face ((t (:foreground "darkorange"))))
- '(font-lock-string-face ((t (:foreground "seagreen"))))
- '(font-lock-variable-name-face ((t (:foreground "cornflowerblue"))))
- '(mumamo-background-chunk-major ((((class color) (min-colors 88) (background dark)) nil)))
- '(mumamo-background-chunk-submode1 ((((class color) (min-colors 88) (background dark)) nil)))
- '(mumamo-background-chunk-submode2 ((((class color) (min-colors 88) (background dark)) nil)))
- '(mumamo-background-chunk-submode3 ((((class color) (min-colors 88) (background dark)) nil)))
- '(mumamo-background-chunk-submode4 ((((class color) (min-colors 88) (background dark)) nil)))
- '(region ((t (:background "cornflowerblue" :foreground "black"))))
- '(region-face ((t (:foreground "black") (:background "cornflowerblue")))))
-
+)
