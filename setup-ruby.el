@@ -18,7 +18,7 @@
             (set (make-local-variable 'indent-tabs-mode) 'nil)
             (set (make-local-variable 'tab-width) 4)
             (set (make-local-variable 'ruby-deep-indent-paren) nil)
-            (set (make-local-variable 'ruby-indent-level)      4)
+            (set (make-local-variable 'ruby-indent-level)      2)
             (flymake-mode t)
             (imenu-add-to-menubar "IMENU")
             (define-key ruby-mode-map [(return)] 'newline-and-indent)
@@ -26,29 +26,29 @@
             ))
 
 ;; Enable Flymake in Ruby
-(require 'flymake)
+;; (require 'flymake)
 
-(setq flymake-allowed-file-name-masks (append
-    '((".+\\.rb$"   flymake-ruby-init)
-      (".+\\.ru$"   flymake-ruby-init)
-      (".+\\.rake$" flymake-ruby-init)
-      ("Rakefile$"  flymake-ruby-init))
-    flymake-allowed-file-name-masks))
+;; (setq flymake-allowed-file-name-masks (append
+;;     '((".+\\.rb$"   flymake-ruby-init)
+;;       (".+\\.ru$"   flymake-ruby-init)
+;;       (".+\\.rake$" flymake-ruby-init)
+;;       ("Rakefile$"  flymake-ruby-init))
+;;     flymake-allowed-file-name-masks))
 
-(setq flymake-err-line-patterns (append
-    '(("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3))
-    flymake-err-line-patterns))
+;; (setq flymake-err-line-patterns (append
+;;     '(("^\\(.*\\):\\([0-9]+\\): \\(.*\\)$" 1 2 nil 3))
+;;     flymake-err-line-patterns))
 
-; Ensure flymake temp files are written to system temp directory
-(defun flymake-create-temp-in-system-tempdir (filename prefix)
-  (make-temp-file (or prefix "flymake-ruby")))
+;; ; Ensure flymake temp files are written to system temp directory
+;; (defun flymake-create-temp-in-system-tempdir (filename prefix)
+;;   (make-temp-file (or prefix "flymake-ruby")))
 
-(defun flymake-ruby-init ()
-  (list "ruby" (list "-c" (flymake-init-create-temp-buffer-copy
-                           'flymake-create-temp-in-system-tempdir))))
+;; (defun flymake-ruby-init ()
+;;   (list "ruby" (list "-c" (flymake-init-create-temp-buffer-copy
+;;                            'flymake-create-temp-in-system-tempdir))))
 
 ;; Rinari RHTML package
-(add-to-list 'load-path "~/.emacs.d/lib/rhtml")
+(add-to-list 'load-path "~/emacs.d/lib/rhtml")
 (require 'rhtml-mode)
 ;(add-hook 'rhtml-mode-hook
 ;    (lambda () (rinari-launch)))
@@ -67,10 +67,10 @@
       ("\\.yml\\..*$"   . yaml-mode))
     auto-mode-alist))
 
-(add-hook 'ruby-mode-hook
-  (lambda ()
+;; (add-hook 'ruby-mode-hook
+;;   (lambda ()
 
-    ))
+;;     ))
 
 ;; Gank some auto-align stuff from the compuweb.
 ;;

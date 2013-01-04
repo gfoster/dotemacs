@@ -12,6 +12,7 @@
   "insert a language appropriate breakpoint"
   (interactive "*")
   (case major-mode
+
     ('python-mode
      (newline-and-indent)
      (insert "import pdb; pdb.set_trace()\n"))
@@ -22,10 +23,36 @@
      (gf-growl-chat "Emacs Notification" (format "no breakpoint appropriate for %s" major-mode)))
     ))
 
+(defun gf-send-private-gist (&optional b e)
+  "send a private gist"
+  (interactive "r")
+
+  (setq type (case major-mode
+    ('emacs-lisp-mode 'el)
+    ('ruby-mode       'rb)
+    ('python-mode     'py)
+    (otherwise 'nil)))
+
+  (if type
+      (setq filename (format "/tmp/gist.private.%s" type))
+    (setq filename "/tmp/gist.private"))
+
+  (if (use-region-p)
+      (shell-command-on-region b e (format "cat > %s" filename))
+    (shell-command-on-region (point-min) (point-max) (format "cat > %s" filename)))
+
+  (shell-command
+   (format "gist.py create --public=False %s" filename))
+
+  (gf-growl-chat "Emacs Notification" (format "posted private gist at %s" (current-kill 0)))
+
+  (shell-command
+   (format "rm %s" filename)))
+
 (defun gf-growl-chat (title message &optional sticky)
   (interactive "sTitle: \nsGrowl: ")
   (shell-command
-   (format "growlnotify %s -m '%s' --appIcon 'Emacs' %s" title message (if sticky "--sticky" ""))))
+   (format "growlnotify %s -m '%s' --appIcon 'Aquamacs' %s" title message (if sticky "--sticky" ""))))
 
 ;; Sticky notifications
 (defun gf-growl-chat-sticky (title message)
@@ -83,7 +110,8 @@
     (with-current-buffer buf
       (when (and (buffer-file-name) (not (buffer-modified-p)))
         (revert-buffer t t t) )))
-  (message "Refreshed open files.") )
+  (gf-growl-chat "Emacs Notification" "Refreshed all open files")
+  (message "Refreshed all open files."))
 
 (defun untabify-buffer ()
   (interactive)
@@ -105,5 +133,38 @@
     ;;(set-frame-font "-apple-garamond-medium-r-normal--36-360-72-72-m-360-iso10646-1")
     ;; switch to fullscreen mode
     (aquamacs-toggle-full-frame)))
+
+(defun move-text-internal (arg)
+   (cond
+    ((and mark-active transient-mark-mode)
+     (if (> (point) (mark))
+        (exchange-point-and-mark))
+     (let ((column (current-column))
+          (text (delete-and-extract-region (point) (mark))))
+       (forward-line arg)
+       (move-to-column column t)
+       (set-mark (point))
+       (insert text)
+       (exchange-point-and-mark)
+       (setq deactivate-mark nil)))
+    (t
+     (beginning-of-line)
+     (when (or (> arg 0) (not (bobp)))
+       (forward-line)
+       (when (or (< arg 0) (not (eobp)))
+        (transpose-lines arg))
+       (forward-line -1)))))
+
+(defun move-text-down (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines down."
+   (interactive "*p")
+   (move-text-internal arg))
+
+(defun move-text-up (arg)
+   "Move region (transient-mark-mode active) or current line
+  arg lines up."
+   (interactive "*p")
+   (move-text-internal (- arg)))
 
 (provide 'gf-snippets)

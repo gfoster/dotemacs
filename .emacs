@@ -49,6 +49,11 @@
 ;;(load-library "cedet")
 (require 'ecb)
 (require 'epa-setup)
+
+;;;
+(require 'logito)
+
+(require 'gist)
 (epa-file-enable)
 
 ;; setup easy gpg
@@ -57,9 +62,10 @@
 ;; -*- mode: org -*- -*- epa-file-encrypt-to: ("my_key_email@foo.org") -*-
 ;;           ^^^ <- modified for the type of mode you want, of course
 
+
 (require 'gf-snippets)
-(require 'setup-python)
-;;(require 'setup-ruby)
+;;(require 'setup-python)
+(require 'setup-ruby)
 
 ;; additional autoloads
 
@@ -84,20 +90,20 @@
     (vc-git-command buf 0 name "blame" )))
 
 ;; auto-reindent lines after a yank (paste) operation
-(defadvice yank (after indent-region activate)
-  (let ((mark-even-if-inactive t))
-    (indent-region (region-beginning) (region-end) nil)))
+;; (defadvice yank (after indent-region activate)
+;;   (let ((mark-even-if-inactive t))
+;;     (indent-region (region-beginning) (region-end) nil)))
 
 ;; enable our various modes
 (yas/global-mode 1)
 (global-pretty-mode 1)
 (ido-mode 1)
 (column-number-mode 1)
-(delete-selection-mode 1)
 (show-paren-mode 1)
 (pulse-toggle-integration-advice 1) ;; pulse lines when we jump, etc
 (setq-default crisp-mode 1) ;; have to do this now to force it globally
 (setq-default crisp-override-meta-x nil)
+(delete-selection-mode 1)
 
 (put 'narrow-to-region 'disabled nil)
 
@@ -150,10 +156,10 @@
 ;; these are normally bound to f3 and f4 respectively, but for some reason
 ;; f3 and f4 are being swallowed on this mac
 
-(define-key crisp-mode-map [(f13) (down)]    'split-window-vertically)
-(define-key crisp-mode-map [(f13) (right)]   'split-window-horizontally)
-(define-key crisp-mode-map [(f14)]           'delete-window)
-(define-key crisp-mode-map [(control f14)]    'delete-other-windows)
+(define-key crisp-mode-map [(f13) (down)]  'split-window-vertically)
+(define-key crisp-mode-map [(f13) (right)] 'split-window-horizontally)
+(define-key crisp-mode-map [(f14)]         'delete-window)
+(define-key crisp-mode-map [(control f14)] 'delete-other-windows)
 
 ;; our own local keybindings
 
@@ -163,18 +169,22 @@
 (global-set-key [(control c) (l)]         'ruby-lint)
 (global-set-key [(control c) (control d)] 'gf-insert-datestamp)
 (global-set-key [(control c) (control t)] 'gf-insert-timestamp)
-(global-set-key [(control c) (control b)] 'gf-insert-breakpoint)
+(global-set-key [(control c) (g)]         'gf-send-private-gist)
+(global-set-key [(control c) (b)]         'gf-insert-breakpoint)
 (global-set-key [(control c) (a)]         'align-regexp)
 (global-set-key [(control c) (s)]         'svn-status)
-(global-set-key  [(control tab)]          'yas/expand)
-
+(global-set-key [(control tab)]           'yas/expand)
+(global-set-key [(control c) (>)]         'indent-region)
 
 ;; love these two defuns so let's make C-e and C-a inherit them too
 (global-set-key [(control e)] 'crisp-end)
 (global-set-key [(control a)] 'crisp-home)
 
-(global-set-key [(meta up)]   'gf-move-line-up)
-(global-set-key [(meta down)] 'gf-move-line-down)
+;; (global-set-key [(meta up)]   'gf-move-line-up)
+;; (global-set-key [(meta down)] 'gf-move-line-down)
+
+(global-set-key [(meta up)]   'move-text-up)
+(global-set-key [(meta down)] 'move-text-down)
 
 ;;(global-set-key [(control c) (g)] 'egg-status)
 (global-set-key [(hyper z)] 'undo)
@@ -224,18 +234,21 @@
  '(compilation-scroll-output t)
  '(crisp-mode t nil (crisp))
  '(crisp-override-meta-x nil)
+ '(cua-mode nil nil (cua-base))
  '(current-language-environment "UTF-8")
  '(cursor-type (quote box))
  '(custom-file nil)
  '(default-input-method "latin-1-prefix")
  '(ecb-clear-cachees-before-activate (quote t))
+ '(ecb-clear-caches-before-activate t)
  '(ecb-directories-update-speedbar t)
  '(ecb-layout-name "left3")
  '(ecb-options-version "2.40")
  '(ecb-primary-secondary-mouse-buttons (quote mouse-1--C-mouse-1))
- '(ecb-source-path (quote ("~/projects")))
+ '(ecb-source-path (quote ("~/projects" ("/" "/"))))
  '(ecb-tip-of-the-day nil)
  '(ecb-tree-buffer-style (quote ascii-guides))
+ '(ecb-vc-enable-support t)
  '(ecb-vc-supported-backends (quote ((ecb-vc-dir-managed-by-SVN . ecb-vc-state) (ecb-vc-dir-managed-by-GIT . ecb-vc-state))))
  '(egg-enable-tooltip t)
  '(egg-mode-key-prefix "C-c v")
@@ -253,11 +266,14 @@
  '(mouse-wheel-scroll-amount (quote (2 ((shift) . 1) ((control)))))
  '(one-buffer-one-frame-mode nil nil (aquamacs-frame-setup))
  '(org-startup-folded nil)
+ '(pc-selection-mode t)
  '(pulse-iterations 20)
+ '(py-electric-comment-p nil)
  '(python-honour-comment-indentation t)
  '(rdebug-restore-original-window-configuration t)
- '(ruby-indent-level 4)
+ '(ruby-indent-level 2)
  '(tab-width 4)
+ '(tabbar-mode t nil (tabbar))
  '(tags-revert-without-query t)
  '(tags-table-list (quote ("/Users/gfoster/projects/talksum/CAMEL/TAGS")))
  '(tool-bar-mode nil)
@@ -273,4 +289,15 @@
   ;; If you edit it by hand, you could mess it up, so be careful.
   ;; Your init file should contain only one such instance.
   ;; If there is more than one, they won't work right.
-)
+ '(default ((t (:inherit nil :stipple nil :background "black" :foreground "white" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight normal :height 140 :width normal :foundry "apple" :family "Monaco")))))
+
+
+;;; This was installed by package-install.el.
+;;; This provides support for the package system and
+;;; interfacing with ELPA, the package archive.
+;;; Move this code earlier if you want to reference
+;;; packages in your .emacs.
+;(when
+;    (load
+;     (expand-file-name "~/.emacs.d/elpa/package.el"))
+;  (package-initialize))
